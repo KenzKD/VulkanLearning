@@ -1,0 +1,79 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Custom Vulkan Build Stuff
+VulkanLearning
+
+# Binaries
+bin
+Debug
+Release
+
+# CMake
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
+cmake_install.cmake
+cmake_uninstall.cmake
+
+# Makefile generator
+Makefile
+
+# CLion
+.idea
+cmake-build-debug
+cmake-build-release
+
+# Visual Studio Code
+.vscode
+
+# Visual Studio
+*.sln
+*.vcxproj*
+*.dir
+.vs
+Win32
+x64
+CMakeSettings.json
+
+# Xcode
+*.build
+*.xcodeproj
+
+# macOS
+.DS_Store
+
+# CLI
+vd*
