@@ -1,8 +1,9 @@
 #pragma once
 #define SHADER_PATH(x) "C:/Users/Lenovo/Desktop/Game_Making/Vulkan_Stuff/VulkanLearning/shaders/" x
 
-#include "lve_window.hpp"
 #include "lve_pipeline.hpp"
+#include "lve_window.hpp"
+#include "lve_device.hpp"
 
 namespace lve
 {
@@ -16,10 +17,13 @@ namespace lve
 
 	private:
 		LveWindow lveWindow{WIDTH, HEIGHT, "Vulkan window"};
-		LvePipeline lve_pipeline
+		LveDevice lveDevice{lveWindow};
+		LvePipeline lvePipeline
 		{
+			lveDevice,
 			SHADER_PATH("simple_shader.vert.spv"),
-			SHADER_PATH("simple_shader.frag.spv")
+			SHADER_PATH("simple_shader.frag.spv"),
+			LvePipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)
 		};
 	};
 }

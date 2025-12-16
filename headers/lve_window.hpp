@@ -10,25 +10,27 @@ namespace lve
 {
 	class LveWindow
 	{
-		public:
-			LveWindow(int w, int h, std::string name);
-			~LveWindow();
+	public:
+		LveWindow(int w, int h, std::string name);
+		~LveWindow();
 
-			LveWindow(const LveWindow &) = delete;
-			LveWindow &operator=(const LveWindow &) = delete;
+		LveWindow(const LveWindow&) = delete;
+		LveWindow& operator=(const LveWindow&) = delete;
 
-			bool shouldClose()
-			{
-				return glfwWindowShouldClose(window);
-			}
-		private:
+		bool shouldClose()
+		{
+			return glfwWindowShouldClose(window);
+		}
 
-			void initWindow();
+		void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 
-			const int width;
-			const int height;
+	private:
+		void initWindow();
 
-			std::string windowName;
-			GLFWwindow* window;
+		const int width;
+		const int height;
+
+		std::string windowName;
+		GLFWwindow* window;
 	};
 }
