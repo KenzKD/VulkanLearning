@@ -1,0 +1,8 @@
+//
+// Created by Lenovo on 18/12/2025.
+//
+
+#ifndef VULKANLEARNING_LVE_MODEL_HPP
+#define VULKANLEARNING_LVE_MODEL_HPP
+
+#endif //VULKANLEARNING_LVE_MODEL_HPP

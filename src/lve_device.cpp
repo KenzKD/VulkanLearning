@@ -136,13 +136,23 @@ namespace lve
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
-    for (const auto& device : devices)
+    std::vector<VkPhysicalDevice> suitableDevices;
+    for (const VkPhysicalDevice& device : devices)
     {
       if (isDeviceSuitable(device))
       {
-        physicalDevice = device;
-        break;
+        suitableDevices.push_back(device);
       }
+    }
+
+    if (!suitableDevices.empty())
+    {
+      // Select the second device if available, otherwise use the first one
+      physicalDevice = suitableDevices.size() > 1 ? suitableDevices[1] : suitableDevices[0];
+    }
+    else
+    {
+      throw std::runtime_error("No suitable GPU found!");
     }
 
     if (physicalDevice == VK_NULL_HANDLE)
