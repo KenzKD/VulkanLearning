@@ -30,7 +30,11 @@ namespace lve
 		void createPipelineLayout();
 		void createPipeline();
 		void createCommandBuffers();
+		void freeCommandBuffers();
 		void drawFrame();
+		void recreateSwapChain();
+		void recordCommandBuffers(int imageIndex);
+
 		void sierpinski(
 			std::vector<LveModel::Vertex>& vertices,
 			int depth,
@@ -40,7 +44,7 @@ namespace lve
 
 		LveWindow lveWindow{WIDTH, HEIGHT, "Vulkan window"};
 		LveDevice lveDevice{lveWindow};
-		LveSwapChain lveSwapChain{lveDevice, lveWindow.getExtent()};
+		std::unique_ptr<LveSwapChain> lveSwapChain;
 		std::unique_ptr<LvePipeline> lvePipeline;
 		VkPipelineLayout pipelineLayout;
 		std::vector<VkCommandBuffer> commandBuffers;
