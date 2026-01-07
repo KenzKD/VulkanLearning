@@ -1,5 +1,6 @@
 #include "first_app.hpp"
 #include "simple_render_system.hpp"
+#include "lve_camera.hpp"
 #define SHADER_PATH(x) "shaders/" x
 
 
@@ -15,111 +16,116 @@
 
 namespace lve
 {
-	struct SimplePushConstantData
-	{
-		glm::mat2 transform{1.f};
-		glm::vec2 offset;
-		alignas(16) glm::vec3 color;
-	};
+    struct SimplePushConstantData
+    {
+        glm::mat2 transform{1.f};
+        glm::vec2 offset;
+        alignas(16) glm::vec3 color;
+    };
 
-	FirstApp::FirstApp()
-	{
-		loadGameObjects();
-	}
+    FirstApp::FirstApp()
+    {
+        loadGameObjects();
+    }
 
-	FirstApp::~FirstApp()
-	{
-	}
+    FirstApp::~FirstApp()
+    {
+    }
 
-	void FirstApp::run()
-	{
-		SimpleRenderSystem simpleRenderSystem(lveDevice, lveRenderer.getSwapChainRenderPass());
+    void FirstApp::run()
+    {
+        SimpleRenderSystem simpleRenderSystem(lveDevice, lveRenderer.getSwapChainRenderPass());
+        LveCamera camera{};
 
-		while (!lveWindow.shouldClose())
-		{
-			glfwPollEvents();
 
-			if (VkCommandBuffer commandBuffer = lveRenderer.beginFrame())
-			{
-				lveRenderer.beginSwapChainRenderPass(commandBuffer);
-				simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects);
-				lveRenderer.endSwapChainRenderPass(commandBuffer);
-				lveRenderer.endFrame();
-			}
-		}
-		vkDeviceWaitIdle(lveDevice.device());
-	}
+        while (!lveWindow.shouldClose())
+        {
+            glfwPollEvents();
+            float aspect = lveRenderer.getAspectRatio();
+            // camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
+            camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
 
-	// temporary helper function, creates a 1x1x1 cube centered at offset
-	std::unique_ptr<LveModel> createCubeModel(LveDevice& device, glm::vec3 offset)
-	{
-		std::vector<LveModel::Vertex> vertices{
+            if (VkCommandBuffer commandBuffer = lveRenderer.beginFrame())
+            {
+                lveRenderer.beginSwapChainRenderPass(commandBuffer);
+                simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
+                lveRenderer.endSwapChainRenderPass(commandBuffer);
+                lveRenderer.endFrame();
+            }
+        }
+        vkDeviceWaitIdle(lveDevice.device());
+    }
 
-			// left face (white)
-			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
-			{{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
-			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-			{{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
-			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+    // temporary helper function, creates a 1x1x1 cube centered at offset
+    std::unique_ptr<LveModel> createCubeModel(LveDevice& device, glm::vec3 offset)
+    {
+        std::vector<LveModel::Vertex> vertices{
 
-			// right face (yellow)
-			{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-			{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
-			{{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
-			{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-			{{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
-			{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+            // left face (white)
+            {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+            {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+            {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
 
-			// top face (orange, remember y axis points down)
-			{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-			{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-			{{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-			{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-			{{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-			{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+            // right face (yellow)
+            {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+            {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+            {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
 
-			// bottom face (red)
-			{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-			{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
-			{{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
-			{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-			{{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-			{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+            // top face (orange, remember y axis points down)
+            {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+            {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+            {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
 
-			// nose face (blue)
-			{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-			{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-			{{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-			{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-			{{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-			{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+            // bottom face (red)
+            {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+            {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
+            {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
 
-			// tail face (green)
-			{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-			{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-			{{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-			{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-			{{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-			{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+            // nose face (blue)
+            {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+            {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+            {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
 
-		};
-		for (auto& v : vertices)
-		{
-			v.position += offset;
-		}
-		return std::make_unique<LveModel>(device, vertices);
-	}
+            // tail face (green)
+            {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+            {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+            {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
 
-	void FirstApp::loadGameObjects()
-	{
-		std::shared_ptr<LveModel> cubeModel = createCubeModel(lveDevice, {0.0f, 0.0f, 0.0f});
+        };
+        for (auto& v : vertices)
+        {
+            v.position += offset;
+        }
+        return std::make_unique<LveModel>(device, vertices);
+    }
 
-		LveGameObject cube = LveGameObject::createGameObject();
-		cube.model = std::move(cubeModel);
-		cube.transform.translation = {0.0f, 0.0f, 0.5f};
-		cube.transform.scale = {0.5f, 0.5f, 0.5f};
+    void FirstApp::loadGameObjects()
+    {
+        std::shared_ptr<LveModel> cubeModel = createCubeModel(lveDevice, {0.0f, 0.0f, 0.0f});
 
-		gameObjects.push_back(std::move(cube));
-	}
+        LveGameObject cube = LveGameObject::createGameObject();
+        cube.model = std::move(cubeModel);
+        cube.transform.translation = {0.0f, 0.0f, 2.5f};
+        cube.transform.scale = {0.5f, 0.5f, 0.5f};
+
+        gameObjects.push_back(std::move(cube));
+    }
 }
