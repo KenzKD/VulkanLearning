@@ -74,8 +74,8 @@ namespace lve
                                                const LveCamera& camera)
     {
         lvePipeline->bind(commandBuffer);
-
-        for (auto& obj : gameObjects)
+        glm::mat<4, 4, float> projectionView = camera.getProjection() * camera.getView();
+        for (LveGameObject& obj : gameObjects)
         {
             obj.transform.rotation.y = glm::mod(obj.transform.rotation.y + 0.01f, glm::two_pi<float>());
             obj.transform.rotation.x = glm::mod(obj.transform.rotation.x + 0.005f, glm::two_pi<float>());
@@ -85,7 +85,7 @@ namespace lve
         {
             SimplePushConstantData push{};
             push.color = obj.color;
-            push.transform = camera.getProjection() * obj.transform.mat4();
+            push.transform = projectionView * obj.transform.mat4();
 
             vkCmdPushConstants(commandBuffer, pipelineLayout,
                                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
