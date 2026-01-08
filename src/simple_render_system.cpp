@@ -75,11 +75,6 @@ namespace lve
     {
         lvePipeline->bind(commandBuffer);
         glm::mat<4, 4, float> projectionView = camera.getProjection() * camera.getView();
-        for (LveGameObject& obj : gameObjects)
-        {
-            obj.transform.rotation.y = glm::mod(obj.transform.rotation.y + 0.01f, glm::two_pi<float>());
-            obj.transform.rotation.x = glm::mod(obj.transform.rotation.x + 0.005f, glm::two_pi<float>());
-        }
 
         for (LveGameObject& obj : gameObjects)
         {
