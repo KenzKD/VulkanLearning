@@ -40,5 +40,5 @@ add_custom_target(Shaders ALL DEPENDS ${COMPILED_SHADERS})
 add_dependencies(${PROJECT_NAME} Shaders)
 
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/headers tinyobjloader)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/headers)
 target_link_libraries(${PROJECT_NAME} glfw glm tinyobjloader Vulkan::Vulkan)
