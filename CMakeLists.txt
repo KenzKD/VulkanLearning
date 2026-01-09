@@ -7,7 +7,8 @@ set(CMAKE_CXX_STANDARD 20)
 include(FetchContent)
 FetchContent_Declare(glfw GIT_REPOSITORY https://github.com/glfw/glfw.git)
 FetchContent_Declare(glm GIT_REPOSITORY https://github.com/g-truc/glm.git)
-FetchContent_MakeAvailable(glfw glm)
+FetchContent_Declare(tinyobjloader GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git GIT_TAG release)
+FetchContent_MakeAvailable(glfw glm tinyobjloader)
 
 find_package(Vulkan REQUIRED)
 
@@ -39,5 +40,5 @@ add_custom_target(Shaders ALL DEPENDS ${COMPILED_SHADERS})
 add_dependencies(${PROJECT_NAME} Shaders)
 
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/headers)
-target_link_libraries(${PROJECT_NAME} glfw glm Vulkan::Vulkan)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/headers tinyobjloader)
+target_link_libraries(${PROJECT_NAME} glfw glm tinyobjloader Vulkan::Vulkan)
