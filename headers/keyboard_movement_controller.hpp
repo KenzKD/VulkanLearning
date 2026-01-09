@@ -14,8 +14,8 @@ namespace lve
             int moveBackward = GLFW_KEY_S;
             int moveRight = GLFW_KEY_D;
             int moveLeft = GLFW_KEY_A;
-            int moveUp = GLFW_KEY_Q;
-            int moveDown = GLFW_KEY_E;
+            int moveUp = GLFW_KEY_E;
+            int moveDown = GLFW_KEY_Q;
             int lookUp = GLFW_KEY_UP;
             int lookDown = GLFW_KEY_DOWN;
             int lookRight = GLFW_KEY_RIGHT;
