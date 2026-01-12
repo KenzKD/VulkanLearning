@@ -10,6 +10,7 @@
 // std
 #include <cassert>
 #include <cstring>
+#include <iostream>
 #include <unordered_map>
 
 namespace std
@@ -205,41 +206,32 @@ namespace lve
                 {
                     vertex.position =
                     {
-                        attrib.vertices[index.vertex_index * 3 + 0],
-                        attrib.vertices[index.vertex_index * 3 + 1],
-                        attrib.vertices[index.vertex_index * 3 + 2]
+                        attrib.vertices[3 * index.vertex_index + 0],
+                        attrib.vertices[3 * index.vertex_index + 1],
+                        attrib.vertices[3 * index.vertex_index + 2]
                     };
-                    int colorIndex = 3 * index.vertex_index + 2;
-                    if (colorIndex < attrib.colors.size())
+                    vertex.color =
                     {
-                        vertex.color =
-                        {
-                            attrib.colors[colorIndex * 3 - 2],
-                            attrib.colors[colorIndex * 3 - 1],
-                            attrib.colors[colorIndex * 3 - 0]
-                        };
-                    }
-                    else
-                    {
-                        vertex.color = {1.0f, 1.0f, 1.0f};
-                    }
-
+                        attrib.colors[3 * index.vertex_index + 0],
+                        attrib.colors[3 * index.vertex_index + 1],
+                        attrib.colors[3 * index.vertex_index + 2]
+                    };
 
                     vertex.normal =
                     {
-                        attrib.normals[index.normal_index * 3 + 0],
-                        attrib.normals[index.normal_index * 3 + 1],
-                        attrib.normals[index.normal_index * 3 + 2]
+                        attrib.normals[3 * index.normal_index + 0],
+                        attrib.normals[3 * index.normal_index + 1],
+                        attrib.normals[3 * index.normal_index + 2]
                     };
                     vertex.uv =
                     {
-                        attrib.texcoords[index.texcoord_index * 2 + 0],
-                        attrib.texcoords[index.texcoord_index * 2 + 1]
+                        attrib.texcoords[2 * index.texcoord_index + 0],
+                        attrib.texcoords[2 * index.texcoord_index + 1]
                     };
 
                     if (uniqueVertices.count(vertex) == 0)
                     {
-                        uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size()) - 1;
+                        uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
                         vertices.push_back(vertex);
                     }
                     indices.push_back(uniqueVertices[vertex]);

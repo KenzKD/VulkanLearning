@@ -80,7 +80,7 @@ namespace lve
             lveDevice, MODEL_PATH("smooth_vase.obj"));
 
         LveGameObject gameObj = LveGameObject::createGameObject();
-        gameObj.model = std::move(gameObjectModel);
+        gameObj.model = gameObjectModel;
         gameObj.transform.translation = {0.0f, 0.0f, 2.5f};
         gameObj.transform.scale = glm::vec3{1.0f};
 
