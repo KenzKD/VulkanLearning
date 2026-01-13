@@ -4,6 +4,7 @@
 #include "lve_game_object.hpp"
 #include "lve_window.hpp"
 #include "lve_renderer.hpp"
+#include "lve_descriptors.hpp"
 
 // std
 #include <memory>
@@ -11,26 +12,29 @@
 
 namespace lve
 {
-	class FirstApp
-	{
-	public:
-		static constexpr int WIDTH = 800;
-		static constexpr int HEIGHT = 600;
+    class FirstApp
+    {
+    public:
+        static constexpr int WIDTH = 800;
+        static constexpr int HEIGHT = 600;
 
-		FirstApp();
-		~FirstApp();
+        FirstApp();
+        ~FirstApp();
 
-		FirstApp(const FirstApp&) = delete;
-		FirstApp& operator=(const FirstApp&) = delete;
+        FirstApp(const FirstApp&) = delete;
+        FirstApp& operator=(const FirstApp&) = delete;
 
-		void run();
+        void run();
 
-	private:
-		void loadGameObjects();
+    private:
+        void loadGameObjects();
 
-		LveWindow lveWindow{WIDTH, HEIGHT, "Vulkan window"};
-		LveDevice lveDevice{lveWindow};
-		LveRenderer lveRenderer{lveWindow, lveDevice};
-		std::vector<LveGameObject> gameObjects;
-	};
+        LveWindow lveWindow{WIDTH, HEIGHT, "Vulkan window"};
+        LveDevice lveDevice{lveWindow};
+        LveRenderer lveRenderer{lveWindow, lveDevice};
+
+        // FIXED: Order of Declaration Matters
+        std::unique_ptr<LveDescriptorPool> globalPool;
+        std::vector<LveGameObject> gameObjects;
+    };
 }
