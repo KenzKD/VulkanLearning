@@ -1,7 +1,9 @@
 #include "first_app.hpp"
 #include "simple_render_system.hpp"
 #include "lve_camera.hpp"
+#include "lve_buffer.hpp"
 #include "keyboard_movement_controller.hpp"
+
 #define SHADER_PATH(x) "shaders/" x
 #define MODEL_PATH(x) "C:/Users/Lenovo/Desktop/Game_Making/Vulkan_Stuff/VulkanLearning/models/" x
 
@@ -19,6 +21,12 @@
 
 namespace lve
 {
+    struct GlobalUbo
+    {
+        glm::mat4 projectionView{1.0f};
+        glm::vec3 lightDirection = glm::normalize(glm::vec3(1.0f, -3.0f, -1.0f));
+    };
+
     struct SimplePushConstantData
     {
         glm::mat2 transform{1.f};
@@ -37,6 +45,32 @@ namespace lve
 
     void FirstApp::run()
     {
+        std::vector<std::unique_ptr<LveBuffer>> uboBuffers(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+        for (std::unique_ptr<LveBuffer>& uboBuffer : uboBuffers)
+        {
+            uboBuffer = std::make_unique<LveBuffer>
+            (
+                lveDevice,
+                sizeof(GlobalUbo),
+                1,
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+            );
+            uboBuffer->map();
+        }
+
+        LveBuffer globalUboBuffer
+        {
+            lveDevice,
+            sizeof(GlobalUbo),
+            LveSwapChain::MAX_FRAMES_IN_FLIGHT,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+            lveDevice.properties.limits.minUniformBufferOffsetAlignment,
+        };
+        globalUboBuffer.map();
+
+
         SimpleRenderSystem simpleRenderSystem(lveDevice, lveRenderer.getSwapChainRenderPass());
         LveCamera camera{};
         // camera.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f));
@@ -65,8 +99,25 @@ namespace lve
 
             if (VkCommandBuffer commandBuffer = lveRenderer.beginFrame())
             {
+                int frameIndex = lveRenderer.getCurrentFrameIndex();
+
+                FrameInfo frameInfo
+                {
+                    frameIndex,
+                    frameTime,
+                    commandBuffer,
+                    camera
+                };
+
+                // Update
+                GlobalUbo ubo = {};
+                ubo.projectionView = camera.getProjection() * camera.getView();
+                uboBuffers[frameIndex]->writeToBuffer(&ubo);
+                uboBuffers[frameIndex]->flush();
+
+                // Render
                 lveRenderer.beginSwapChainRenderPass(commandBuffer);
-                simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
+                simpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
                 lveRenderer.endSwapChainRenderPass(commandBuffer);
                 lveRenderer.endFrame();
             }
