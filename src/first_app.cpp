@@ -26,7 +26,7 @@ namespace lve
         glm::mat4 projectionViewMatrix{1.0f};
         glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f};
         glm::vec3 lightPosition{-1.0f};
-        alignas(16) glm::vec4 lightColor{1.0f, 1.0f, 1.0f, 0.5f};
+        alignas(16) glm::vec4 lightColor{1.0f, 1.0f, 1.0f, 1.0f};
     };
 
     struct SimplePushConstantData
@@ -68,7 +68,7 @@ namespace lve
 
         std::unique_ptr<LveDescriptorSetLayout> globalSetLayout
             = LveDescriptorSetLayout::Builder(lveDevice)
-              .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+              .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
               .build();
 
         std::vector<VkDescriptorSet> globalDescriptorSets(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -128,7 +128,8 @@ namespace lve
                     frameTime,
                     commandBuffer,
                     camera,
-                    globalDescriptorSets[frameIndex]
+                    globalDescriptorSets[frameIndex],
+                    gameObjects
                 };
 
                 // Update
@@ -139,7 +140,7 @@ namespace lve
 
                 // Render
                 lveRenderer.beginSwapChainRenderPass(commandBuffer);
-                simpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
+                simpleRenderSystem.renderGameObjects(frameInfo);
                 lveRenderer.endSwapChainRenderPass(commandBuffer);
                 lveRenderer.endFrame();
             }
@@ -155,7 +156,7 @@ namespace lve
         flatVase.model = lveModel;
         flatVase.transform.translation = {-0.5f, 0.5f, 0.0f};;
         flatVase.transform.scale = {3.0f, 1.5f, 3.0f};
-        gameObjects.push_back(std::move(flatVase));
+        gameObjects.emplace(flatVase.getId(), std::move(flatVase));
 
         lveModel = LveModel::createModelFromFile(
             lveDevice, MODEL_PATH("smooth_vase.obj"));
@@ -163,7 +164,7 @@ namespace lve
         smoothVase.model = lveModel;
         smoothVase.transform.translation = {0.5f, 0.5f, 0.0f};
         smoothVase.transform.scale = {3.0f, 1.5f, 3.0f};
-        gameObjects.push_back(std::move(smoothVase));
+        gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
 
         lveModel = LveModel::createModelFromFile(
             lveDevice, MODEL_PATH("quad.obj"));
@@ -171,6 +172,6 @@ namespace lve
         floor.model = lveModel;
         floor.transform.translation = {0.0f, 0.5f, 0.0f};
         floor.transform.scale = {3.0f, 1.0f, 3.0f};
-        gameObjects.push_back(std::move(floor));
+        gameObjects.emplace(floor.getId(), std::move(floor));
     }
 }

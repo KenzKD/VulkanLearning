@@ -7,6 +7,7 @@
 
 // std
 #include <memory>
+#include <unordered_map>
 
 namespace lve
 {
@@ -27,6 +28,7 @@ namespace lve
     {
     public:
         using id_t = unsigned int;
+        using Map = std::unordered_map<id_t, LveGameObject>;
 
         static LveGameObject createGameObject()
         {

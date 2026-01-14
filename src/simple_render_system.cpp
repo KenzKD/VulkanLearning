@@ -72,7 +72,7 @@ namespace lve
         );
     }
 
-    void SimpleRenderSystem::renderGameObjects(FrameInfo& frameInfo, std::vector<LveGameObject>& gameObjects)
+    void SimpleRenderSystem::renderGameObjects(FrameInfo& frameInfo)
     {
         lvePipeline->bind(frameInfo.commandBuffer);
         vkCmdBindDescriptorSets
@@ -87,8 +87,13 @@ namespace lve
             nullptr
         );
 
-        for (LveGameObject& obj : gameObjects)
+        for (std::pair<const unsigned, LveGameObject>& kv : frameInfo.gameObjects)
         {
+            LveGameObject& obj = kv.second;
+            if (obj.model == nullptr)
+            {
+                continue;
+            }
             SimplePushConstantData push{};
             push.modelMatrix = obj.transform.mat4();
             push.normalMatrix = obj.transform.normalMatrix();
