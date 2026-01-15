@@ -22,15 +22,6 @@
 
 namespace lve
 {
-    struct GlobalUbo
-    {
-        glm::mat4 projectionMatrix{1.0f};
-        glm::mat4 viewMatrix{1.0f};
-        glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f};
-        glm::vec3 lightPosition{-1.0f};
-        alignas(16) glm::vec4 lightColor{1.0f, 1.0f, 1.0f, 1.0f};
-    };
-
     struct SimplePushConstantData
     {
         glm::mat2 transform{1.f};
@@ -93,10 +84,11 @@ namespace lve
         };
         globalUboBuffer.map();
 
-        SimpleRenderSystem simpleRenderSystem(lveDevice, lveRenderer.getSwapChainRenderPass(),
-                                              globalSetLayout->getDescriptorSetLayout());
-        PointLightSystem pointLightSystem(lveDevice, lveRenderer.getSwapChainRenderPass(),
-                                          globalSetLayout->getDescriptorSetLayout());
+        SimpleRenderSystem simpleRenderSystem
+            (lveDevice, lveRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout());
+        PointLightSystem pointLightSystem
+            (lveDevice, lveRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout());
+
         LveCamera camera{};
         camera.setViewTarget(glm::vec3(-1.0f, -2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 2.5f));
 
@@ -140,6 +132,7 @@ namespace lve
                 GlobalUbo ubo = {};
                 ubo.projectionMatrix = camera.getProjection();
                 ubo.viewMatrix = camera.getView();
+                pointLightSystem.update(frameInfo, ubo);
                 uboBuffers[frameIndex]->writeToBuffer(&ubo);
                 uboBuffers[frameIndex]->flush();
 
@@ -156,6 +149,7 @@ namespace lve
 
     void FirstApp::loadGameObjects()
     {
+        // Flat Vase
         std::shared_ptr<LveModel> lveModel = LveModel::createModelFromFile(
             lveDevice, MODEL_PATH("flat_vase.obj"));
         LveGameObject flatVase = LveGameObject::createGameObject();
@@ -164,6 +158,7 @@ namespace lve
         flatVase.transform.scale = {3.0f, 1.5f, 3.0f};
         gameObjects.emplace(flatVase.getId(), std::move(flatVase));
 
+        // Smooth Vase
         lveModel = LveModel::createModelFromFile(
             lveDevice, MODEL_PATH("smooth_vase.obj"));
         LveGameObject smoothVase = LveGameObject::createGameObject();
@@ -172,6 +167,7 @@ namespace lve
         smoothVase.transform.scale = {3.0f, 1.5f, 3.0f};
         gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
 
+        // Floor
         lveModel = LveModel::createModelFromFile(
             lveDevice, MODEL_PATH("quad.obj"));
         LveGameObject floor = LveGameObject::createGameObject();
@@ -179,5 +175,32 @@ namespace lve
         floor.transform.translation = {0.0f, 0.5f, 0.0f};
         floor.transform.scale = {3.0f, 1.0f, 3.0f};
         gameObjects.emplace(floor.getId(), std::move(floor));
+
+        // Point Lights
+        std::vector<glm::vec3> lightColors
+        {
+            {1.f, .1f, .1f},
+            {.1f, .1f, 1.f},
+            {.1f, 1.f, .1f},
+            {1.f, 1.f, .1f},
+            {.1f, 1.f, 1.f},
+            {1.f, 1.f, 1.f}
+        };
+
+        for (int i = 0; i < lightColors.size(); i++)
+        {
+            LveGameObject pointLight = LveGameObject::makePointLight(0.2f);
+            pointLight.color = lightColors[i];
+            glm::mat<4, 4, float> rotateLight =
+                glm::rotate
+                (
+                    glm::mat4(1.0f),
+                    (i * glm::two_pi<float>()) / lightColors.size(),
+                    {0.0f, -1.f, 0.0f}
+                );
+            pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f));
+
+            gameObjects.emplace(pointLight.getId(), std::move(pointLight));
+        }
     }
 }
