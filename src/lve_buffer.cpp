@@ -21,7 +21,7 @@ namespace lve
      *
      * @return VkResult of the buffer mapping call
      */
-    VkDeviceSize LveBuffer::getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment)
+    VkDeviceSize LveBuffer::getAlignment(const VkDeviceSize instanceSize, const VkDeviceSize minOffsetAlignment)
     {
         if (minOffsetAlignment > 0)
         {
@@ -32,16 +32,16 @@ namespace lve
 
     LveBuffer::LveBuffer(
         LveDevice& device,
-        VkDeviceSize instanceSize,
-        uint32_t instanceCount,
-        VkBufferUsageFlags usageFlags,
-        VkMemoryPropertyFlags memoryPropertyFlags,
-        VkDeviceSize minOffsetAlignment)
-        : lveDevice{device},
-          instanceSize{instanceSize},
-          instanceCount{instanceCount},
-          usageFlags{usageFlags},
-          memoryPropertyFlags{memoryPropertyFlags}
+        const VkDeviceSize instanceSize,
+        const uint32_t instanceCount,
+        const VkBufferUsageFlags usageFlags,
+        const VkMemoryPropertyFlags memoryPropertyFlags,
+        const VkDeviceSize minOffsetAlignment) :
+        lveDevice{device},
+        instanceCount{instanceCount},
+        instanceSize{instanceSize},
+        usageFlags{usageFlags},
+        memoryPropertyFlags{memoryPropertyFlags}
     {
         alignmentSize = getAlignment(instanceSize, minOffsetAlignment);
         bufferSize = alignmentSize * instanceCount;
@@ -63,7 +63,7 @@ namespace lve
      *
      * @return VkResult of the buffer mapping call
      */
-    VkResult LveBuffer::map(VkDeviceSize size, VkDeviceSize offset)
+    VkResult LveBuffer::map(const VkDeviceSize size, const VkDeviceSize offset)
     {
         assert(buffer && memory && "Called map on buffer before create");
         return vkMapMemory(lveDevice.device(), memory, offset, size, 0, &mapped);
@@ -91,7 +91,7 @@ namespace lve
      * @param offset (Optional) Byte offset from beginning of mapped region
      *
      */
-    void LveBuffer::writeToBuffer(void* data, VkDeviceSize size, VkDeviceSize offset)
+    void LveBuffer::writeToBuffer(const void* data, const VkDeviceSize size, const VkDeviceSize offset) const
     {
         assert(mapped && "Cannot copy to unmapped buffer");
 
@@ -101,7 +101,7 @@ namespace lve
         }
         else
         {
-            char* memOffset = (char*)mapped;
+            char* memOffset = static_cast<char*>(mapped);
             memOffset += offset;
             memcpy(memOffset, data, size);
         }
@@ -117,7 +117,7 @@ namespace lve
      *
      * @return VkResult of the flush call
      */
-    VkResult LveBuffer::flush(VkDeviceSize size, VkDeviceSize offset)
+    VkResult LveBuffer::flush(const VkDeviceSize size, const VkDeviceSize offset) const
     {
         VkMappedMemoryRange mappedRange = {};
         mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
@@ -137,7 +137,7 @@ namespace lve
      *
      * @return VkResult of the invalidate call
      */
-    VkResult LveBuffer::invalidate(VkDeviceSize size, VkDeviceSize offset)
+    VkResult LveBuffer::invalidate(const VkDeviceSize size, const VkDeviceSize offset) const
     {
         VkMappedMemoryRange mappedRange = {};
         mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
@@ -155,7 +155,7 @@ namespace lve
      *
      * @return VkDescriptorBufferInfo of specified offset and range
      */
-    VkDescriptorBufferInfo LveBuffer::descriptorInfo(VkDeviceSize size, VkDeviceSize offset)
+    VkDescriptorBufferInfo LveBuffer::descriptorInfo(const VkDeviceSize size, const VkDeviceSize offset) const
     {
         return VkDescriptorBufferInfo{
             buffer,
@@ -171,7 +171,7 @@ namespace lve
      * @param index Used in offset calculation
      *
      */
-    void LveBuffer::writeToIndex(void* data, int index)
+    void LveBuffer::writeToIndex(const void* data, const int index) const
     {
         writeToBuffer(data, instanceSize, index * alignmentSize);
     }
@@ -182,7 +182,7 @@ namespace lve
      * @param index Used in offset calculation
      *
      */
-    VkResult LveBuffer::flushIndex(int index)
+    VkResult LveBuffer::flushIndex(const int index) const
     {
         return flush(alignmentSize, index * alignmentSize);
     }
@@ -194,7 +194,7 @@ namespace lve
      *
      * @return VkDescriptorBufferInfo for instance at index
      */
-    VkDescriptorBufferInfo LveBuffer::descriptorInfoForIndex(int index)
+    VkDescriptorBufferInfo LveBuffer::descriptorInfoForIndex(const int index) const
     {
         return descriptorInfo(alignmentSize, index * alignmentSize);
     }
@@ -208,7 +208,7 @@ namespace lve
      *
      * @return VkResult of the invalidate call
      */
-    VkResult LveBuffer::invalidateIndex(int index)
+    VkResult LveBuffer::invalidateIndex(const int index) const
     {
         return invalidate(alignmentSize, index * alignmentSize);
     }

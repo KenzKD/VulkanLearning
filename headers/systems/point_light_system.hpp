@@ -18,8 +18,8 @@ namespace lve
         PointLightSystem(const PointLightSystem&) = delete;
         PointLightSystem& operator=(const PointLightSystem&) = delete;
 
-        void update(FrameInfo& frameInfo, GlobalUbo& ubo);
-        void render(FrameInfo& frameInfo);
+        static void update(const FrameInfo& frameInfo, GlobalUbo& ubo);
+        void render(const FrameInfo& frameInfo) const;
 
     private:
         void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);

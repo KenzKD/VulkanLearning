@@ -1,15 +1,14 @@
-#include "../../headers/systems/simple_render_system.hpp"
+#include "systems/simple_render_system.hpp"
 #define SHADER_PATH(x) "shaders/" x
 
 // Libraries
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
 
 // std
-#include <stdexcept>
 #include<cassert>
+#include <stdexcept>
 
 namespace lve
 {
@@ -20,7 +19,7 @@ namespace lve
     };
 
     SimpleRenderSystem::SimpleRenderSystem
-    (LveDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout) : lveDevice(device)
+    (LveDevice& device, const VkRenderPass renderPass, const VkDescriptorSetLayout globalSetLayout) : lveDevice(device)
     {
         createPipelineLayout(globalSetLayout);
         createPipeline(renderPass);
@@ -31,14 +30,14 @@ namespace lve
         vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr);
     }
 
-    void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
+    void SimpleRenderSystem::createPipelineLayout(const VkDescriptorSetLayout globalSetLayout)
     {
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         pushConstantRange.offset = 0;
         pushConstantRange.size = sizeof(SimplePushConstantData);
 
-        std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
+        const std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -53,7 +52,7 @@ namespace lve
         }
     }
 
-    void SimpleRenderSystem::createPipeline(VkRenderPass renderPass)
+    void SimpleRenderSystem::createPipeline(const VkRenderPass renderPass)
     {
         assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 
@@ -72,7 +71,7 @@ namespace lve
         );
     }
 
-    void SimpleRenderSystem::renderGameObjects(FrameInfo& frameInfo)
+    void SimpleRenderSystem::renderGameObjects(const FrameInfo& frameInfo) const
     {
         lvePipeline->bind(frameInfo.commandBuffer);
         vkCmdBindDescriptorSets

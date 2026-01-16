@@ -49,8 +49,8 @@ namespace lve
 
         VkCommandBuffer beginFrame();
         void endFrame();
-        void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
-        void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
+        void beginSwapChainRenderPass(VkCommandBuffer commandBuffer) const;
+        void endSwapChainRenderPass(VkCommandBuffer commandBuffer) const;
 
     private:
         void createCommandBuffers();

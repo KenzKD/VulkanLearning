@@ -5,13 +5,11 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
 
 // std
-#include <stdexcept>
 #include<cassert>
 #include<map>
-#include<array>
+#include <stdexcept>
 
 namespace lve
 {
@@ -23,7 +21,7 @@ namespace lve
     };
 
     PointLightSystem::PointLightSystem
-    (LveDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout) : lveDevice(device)
+    (LveDevice& device, const VkRenderPass renderPass, const VkDescriptorSetLayout globalSetLayout) : lveDevice(device)
     {
         createPipelineLayout(globalSetLayout);
         createPipeline(renderPass);
@@ -34,14 +32,14 @@ namespace lve
         vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr);
     }
 
-    void PointLightSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
+    void PointLightSystem::createPipelineLayout(const VkDescriptorSetLayout globalSetLayout)
     {
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         pushConstantRange.offset = 0;
         pushConstantRange.size = sizeof(PointLightPushConstants);
 
-        std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
+        const std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -56,7 +54,7 @@ namespace lve
         }
     }
 
-    void PointLightSystem::createPipeline(VkRenderPass renderPass)
+    void PointLightSystem::createPipeline(const VkRenderPass renderPass)
     {
         assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 
@@ -78,9 +76,9 @@ namespace lve
         );
     }
 
-    void PointLightSystem::update(FrameInfo& frameInfo, GlobalUbo& ubo)
+    void PointLightSystem::update(const FrameInfo& frameInfo, GlobalUbo& ubo)
     {
-        glm::mat<4, 4, float> rotateLight =
+        const glm::mat<4, 4, float> rotateLight =
             glm::rotate
             (
                 glm::mat4(1.0f),
@@ -108,7 +106,7 @@ namespace lve
         ubo.numLights = lightIndex;
     }
 
-    void PointLightSystem::render(FrameInfo& frameInfo)
+    void PointLightSystem::render(const FrameInfo& frameInfo) const
     {
         // Sort Lights
         std::map<float, LveGameObject::id_t> sorted;
@@ -122,7 +120,7 @@ namespace lve
             }
 
             // calculate distance
-            auto offset = frameInfo.camera.getPosition() - obj.transform.translation;
+            glm::vec<3, float> offset = frameInfo.camera.getPosition() - obj.transform.translation;
             float disSquared = glm::dot(offset, offset);
             sorted[disSquared] = obj.getId();
         }
@@ -140,7 +138,7 @@ namespace lve
             nullptr
         );
 
-        for (std::map<float, LveGameObject::id_t>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
+        for (auto it = sorted.rbegin(); it != sorted.rend(); ++it)
         {
             LveGameObject& obj = frameInfo.gameObjects.at(it->second);
 

@@ -26,7 +26,7 @@ namespace lve
         float moveSpeed{3.0f};
         float lookSpeed{1.5f};
 
-        void lookInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject);
-        void moveInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject);
+        void lookInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject) const;
+        void moveInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject) const;
     };
 }

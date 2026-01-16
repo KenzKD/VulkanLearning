@@ -1,45 +1,46 @@
 #include "lve_window.hpp"
 
+// std
 #include <stdexcept>
 
 namespace lve
 {
-	LveWindow::LveWindow(int w, int h, std::string name) : width{w}, height{h}, windowName{name}
-	{
-		initWindow();
-	}
+    LveWindow::LveWindow(const int w, const int h, const std::string& name) : width{w}, height{h}, windowName{name}
+    {
+        initWindow();
+    }
 
-	LveWindow::~LveWindow()
-	{
-		glfwDestroyWindow(window);
-		glfwTerminate();
-	}
+    LveWindow::~LveWindow()
+    {
+        glfwDestroyWindow(window);
+        glfwTerminate();
+    }
 
-	void LveWindow::initWindow()
-	{
-		glfwInit();
+    void LveWindow::initWindow()
+    {
+        glfwInit();
 
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-		window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
-		glfwSetWindowUserPointer(window, this);
-		glfwSetFramebufferSizeCallback(window, framebufferResizedCallback);
-	}
+        window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
+        glfwSetWindowUserPointer(window, this);
+        glfwSetFramebufferSizeCallback(window, framebufferResizedCallback);
+    }
 
-	void LveWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
-	{
-		if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to create window surface!");
-		}
-	}
+    void LveWindow::createWindowSurface(const VkInstance instance, VkSurfaceKHR* surface) const
+    {
+        if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create window surface!");
+        }
+    }
 
-	void LveWindow::framebufferResizedCallback(GLFWwindow* window, int width, int height)
-	{
-		LveWindow* lveWindow = reinterpret_cast<LveWindow*>(glfwGetWindowUserPointer(window));
-		lveWindow->framebufferResized = true;
-		lveWindow->width = width;
-		lveWindow->height = height;
-	}
+    void LveWindow::framebufferResizedCallback(GLFWwindow* window, const int width, const int height)
+    {
+        LveWindow* lveWindow = static_cast<LveWindow*>(glfwGetWindowUserPointer(window));
+        lveWindow->framebufferResized = true;
+        lveWindow->width = width;
+        lveWindow->height = height;
+    }
 }

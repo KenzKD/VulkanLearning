@@ -1,4 +1,5 @@
 #include "lve_model.hpp"
+
 #include "lve_utils.hpp"
 
 // Libraries
@@ -13,19 +14,16 @@
 #include <iostream>
 #include <unordered_map>
 
-namespace std
+template <>
+struct std::hash<lve::LveModel::Vertex>
 {
-    template <>
-    struct hash<lve::LveModel::Vertex>
+    size_t operator()(lve::LveModel::Vertex const& vertex) const noexcept
     {
-        size_t operator()(lve::LveModel::Vertex const& vertex) const
-        {
-            size_t seed = 0;
-            lve::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
-            return seed;
-        }
-    };
-}
+        size_t seed = 0;
+        lve::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+        return seed;
+    }
+};
 
 namespace lve
 {
@@ -43,7 +41,7 @@ namespace lve
     {
         vertexCount = static_cast<uint32_t>(vertices.size());
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
-        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+        const VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
         uint32_t vertexSize = sizeof(vertices[0]);
 
         LveBuffer stagingBuffer
@@ -78,7 +76,7 @@ namespace lve
         {
             return;
         }
-        VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
+        const VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
         uint32_t indexSize = sizeof(indices[0]);
 
         LveBuffer stagingBuffer
@@ -112,10 +110,10 @@ namespace lve
         return std::make_unique<LveModel>(device, builder);
     }
 
-    void LveModel::bind(VkCommandBuffer commandBuffer)
+    void LveModel::bind(const VkCommandBuffer commandBuffer) const
     {
-        VkBuffer buffers[] = {vertexBuffer->getBuffer()};
-        VkDeviceSize offsets[] = {0};
+        const VkBuffer buffers[] = {vertexBuffer->getBuffer()};
+        constexpr VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 
         if (hasIndexBuffer)
@@ -124,7 +122,7 @@ namespace lve
         }
     }
 
-    void LveModel::draw(VkCommandBuffer commandBuffer)
+    void LveModel::draw(const VkCommandBuffer commandBuffer) const
     {
         if (hasIndexBuffer)
         {
@@ -178,9 +176,9 @@ namespace lve
         {
             for (const tinyobj::index_t& index : shape.mesh.indices)
             {
-                Vertex vertex{};
                 if (index.vertex_index >= 0)
                 {
+                    Vertex vertex{};
                     vertex.position =
                     {
                         attrib.vertices[3 * index.vertex_index + 0],
@@ -206,7 +204,7 @@ namespace lve
                         attrib.texcoords[2 * index.texcoord_index + 1]
                     };
 
-                    if (uniqueVertices.count(vertex) == 0)
+                    if (!uniqueVertices.contains(vertex))
                     {
                         uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
                         vertices.push_back(vertex);

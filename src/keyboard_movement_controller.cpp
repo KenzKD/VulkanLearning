@@ -5,7 +5,7 @@
 
 namespace lve
 {
-    void KeyboardMovementController::lookInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject)
+    void KeyboardMovementController::lookInPlaneXZ(GLFWwindow* window, const float dt, LveGameObject& gameObject) const
     {
         glm::vec3 rotate{0.0f};
         if (glfwGetKey(window, keys.lookUp) == GLFW_PRESS) rotate.x += 1.0f;
@@ -23,7 +23,7 @@ namespace lve
         gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y, glm::two_pi<float>());
     }
 
-    void KeyboardMovementController::moveInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject)
+    void KeyboardMovementController::moveInPlaneXZ(GLFWwindow* window, const float dt, LveGameObject& gameObject) const
     {
         glm::vec3 rotate{0.0f};
         if (glfwGetKey(window, keys.lookUp) == GLFW_PRESS) rotate.x += 1.0f;
@@ -43,7 +43,7 @@ namespace lve
         float yaw = gameObject.transform.rotation.y;
         const glm::vec3 forwardDir{glm::sin(yaw), 0.0f, glm::cos(yaw)};
         const glm::vec3 rightDir{forwardDir.z, 0.0f, -forwardDir.x};
-        const glm::vec3 upDir{0.0f, -1.0f, 0.0f};
+        constexpr glm::vec3 upDir{0.0f, -1.0f, 0.0f};
 
         glm::vec3 moveDir{0.0f};
         if (glfwGetKey(window, keys.moveForward) == GLFW_PRESS) moveDir += forwardDir;

@@ -33,7 +33,7 @@ namespace lve
         };
     }
 
-    glm::mat3 TransformComponent::normalMatrix()
+    glm::mat3 TransformComponent::normalMatrix() const
     {
         const float c3 = glm::cos(rotation.z);
         const float s3 = glm::sin(rotation.z);
@@ -64,7 +64,7 @@ namespace lve
     }
 
     LveGameObject LveGameObject::makePointLight
-    (float intensity, float radius, glm::vec3 color)
+    (const float intensity, const float radius, const glm::vec3 color)
     {
         LveGameObject lightObj = LveGameObject::createGameObject();
         lightObj.color = color;

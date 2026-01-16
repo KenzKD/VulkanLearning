@@ -9,13 +9,15 @@
 
 namespace lve
 {
-    LveSwapChain::LveSwapChain(LveDevice& deviceRef, VkExtent2D extent) : device{deviceRef}, windowExtent{extent}
+    LveSwapChain::LveSwapChain(LveDevice& deviceRef, const VkExtent2D windowExtent) : device{deviceRef},
+        windowExtent{windowExtent}
     {
         init();
     }
 
-    LveSwapChain::LveSwapChain(LveDevice& deviceRef, VkExtent2D extent, std::shared_ptr<LveSwapChain> previous)
-        : device{deviceRef}, windowExtent{extent}, oldSwapChain{previous}
+    LveSwapChain::LveSwapChain(LveDevice& deviceRef, const VkExtent2D windowExtent,
+                               const std::shared_ptr<LveSwapChain>& previous)
+        : device{deviceRef}, windowExtent{windowExtent}, oldSwapChain{previous}
     {
         init();
 
@@ -35,7 +37,7 @@ namespace lve
 
     LveSwapChain::~LveSwapChain()
     {
-        for (auto imageView : swapChainImageViews)
+        for (const auto imageView : swapChainImageViews)
         {
             vkDestroyImageView(device.device(), imageView, nullptr);
         }
@@ -54,7 +56,7 @@ namespace lve
             vkFreeMemory(device.device(), depthImageMemorys[i], nullptr);
         }
 
-        for (auto framebuffer : swapChainFramebuffers)
+        for (const auto framebuffer : swapChainFramebuffers)
         {
             vkDestroyFramebuffer(device.device(), framebuffer, nullptr);
         }
@@ -79,7 +81,7 @@ namespace lve
             VK_TRUE,
             std::numeric_limits<uint64_t>::max());
 
-        VkResult result = vkAcquireNextImageKHR(
+        const VkResult result = vkAcquireNextImageKHR(
             device.device(),
             swapChain,
             std::numeric_limits<uint64_t>::max(),
@@ -91,7 +93,7 @@ namespace lve
     }
 
     VkResult LveSwapChain::submitCommandBuffers(
-        const VkCommandBuffer* buffers, uint32_t* imageIndex)
+        const VkCommandBuffer* buffers, const uint32_t* imageIndex)
     {
         if (imagesInFlight[*imageIndex] != VK_NULL_HANDLE)
         {
@@ -102,8 +104,8 @@ namespace lve
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-        VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
-        VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+        const VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
+        constexpr VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
@@ -111,7 +113,7 @@ namespace lve
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = buffers;
 
-        VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
+        const VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -128,13 +130,13 @@ namespace lve
         presentInfo.waitSemaphoreCount = 1;
         presentInfo.pWaitSemaphores = signalSemaphores;
 
-        VkSwapchainKHR swapChains[] = {swapChain};
+        const VkSwapchainKHR swapChains[] = {swapChain};
         presentInfo.swapchainCount = 1;
         presentInfo.pSwapchains = swapChains;
 
         presentInfo.pImageIndices = imageIndex;
 
-        auto result = vkQueuePresentKHR(device.presentQueue(), &presentInfo);
+        const auto result = vkQueuePresentKHR(device.presentQueue(), &presentInfo);
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
@@ -143,11 +145,11 @@ namespace lve
 
     void LveSwapChain::createSwapChain()
     {
-        SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
+        const SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
 
-        VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-        VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-        VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+        const VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+        const VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+        const VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
 
         uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
         if (swapChainSupport.capabilities.maxImageCount > 0 &&
@@ -167,8 +169,8 @@ namespace lve
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
-        uint32_t queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
+        const QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
+        const uint32_t queueFamilyIndices[] = {indices.graphicsFamily, indices.presentFamily};
 
         if (indices.graphicsFamily != indices.presentFamily)
         {
@@ -279,7 +281,7 @@ namespace lve
         dependency.dstAccessMask =
             VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-        std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
+        const std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
         VkRenderPassCreateInfo renderPassInfo = {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
         renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -302,7 +304,7 @@ namespace lve
         {
             std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageViews[i]};
 
-            VkExtent2D swapChainExtent = getSwapChainExtent();
+            const VkExtent2D swapChainExtent = getSwapChainExtent();
             VkFramebufferCreateInfo framebufferInfo = {};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
             framebufferInfo.renderPass = renderPass;
@@ -325,9 +327,9 @@ namespace lve
 
     void LveSwapChain::createDepthResources()
     {
-        VkFormat depthFormat = findDepthFormat();
+        const VkFormat depthFormat = findDepthFormat();
         swapChainDepthFormat = depthFormat;
-        VkExtent2D swapChainExtent = getSwapChainExtent();
+        const VkExtent2D swapChainExtent = getSwapChainExtent();
 
         depthImages.resize(imageCount());
         depthImageMemorys.resize(imageCount());
@@ -440,7 +442,7 @@ namespace lve
         return VK_PRESENT_MODE_FIFO_KHR;
     }
 
-    VkExtent2D LveSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+    VkExtent2D LveSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
     {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
         {
@@ -460,7 +462,7 @@ namespace lve
         }
     }
 
-    VkFormat LveSwapChain::findDepthFormat()
+    VkFormat LveSwapChain::findDepthFormat() const
     {
         return device.findSupportedFormat(
             {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},

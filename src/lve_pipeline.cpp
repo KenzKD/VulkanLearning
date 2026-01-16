@@ -1,11 +1,12 @@
 #include "lve_pipeline.hpp"
+
 #include "lve_model.hpp"
 
 // std
-#include <fstream>
-#include <stdexcept>
-#include <iostream>
 #include <cassert>
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
 
 namespace lve
 {
@@ -36,7 +37,7 @@ namespace lve
             throw std::runtime_error("failed to open file: " + filepath);
         }
 
-        size_t fileSize = static_cast<size_t>(file.tellg());
+        const size_t fileSize = static_cast<size_t>(file.tellg());
         std::vector<char> buffer(fileSize);
 
         file.seekg(0);
@@ -62,8 +63,8 @@ namespace lve
             "Cannot create graphics pipeline:: no renderPass provided in configInfo"
         );
 
-        std::vector<char> vertCode = readFile(vertFilepath);
-        std::vector<char> fragCode = readFile(fragFilepath);
+        const std::vector<char> vertCode = readFile(vertFilepath);
+        const std::vector<char> fragCode = readFile(fragFilepath);
 
         createShaderModule(vertCode, &vertShaderModule);
         createShaderModule(fragCode, &fragShaderModule);
@@ -124,7 +125,7 @@ namespace lve
         }
     }
 
-    void LvePipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
+    void LvePipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule) const
     {
         VkShaderModuleCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -137,7 +138,7 @@ namespace lve
         }
     }
 
-    void LvePipeline::bind(VkCommandBuffer commandBuffer)
+    void LvePipeline::bind(const VkCommandBuffer commandBuffer) const
     {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }

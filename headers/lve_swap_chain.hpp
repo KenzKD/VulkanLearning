@@ -17,7 +17,7 @@ namespace lve
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
         LveSwapChain(LveDevice& deviceRef, VkExtent2D windowExtent);
-        LveSwapChain(LveDevice& deviceRef, VkExtent2D windowExtent, std::shared_ptr<LveSwapChain> previous);
+        LveSwapChain(LveDevice& deviceRef, VkExtent2D windowExtent, const std::shared_ptr<LveSwapChain>& previous);
 
         ~LveSwapChain();
 
@@ -69,10 +69,10 @@ namespace lve
             return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
         }
 
-        VkFormat findDepthFormat();
+        VkFormat findDepthFormat() const;
 
         VkResult acquireNextImage(uint32_t* imageIndex) const;
-        VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
+        VkResult submitCommandBuffers(const VkCommandBuffer* buffers, const uint32_t* imageIndex);
 
         bool compareSwapFormats(const LveSwapChain& swapChain) const
         {
@@ -90,11 +90,11 @@ namespace lve
         void createSyncObjects();
 
         // Helper functions
-        VkSurfaceFormatKHR chooseSwapSurfaceFormat(
+        static VkSurfaceFormatKHR chooseSwapSurfaceFormat(
             const std::vector<VkSurfaceFormatKHR>& availableFormats);
-        VkPresentModeKHR chooseSwapPresentMode(
+        static VkPresentModeKHR chooseSwapPresentMode(
             const std::vector<VkPresentModeKHR>& availablePresentModes);
-        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
 
         VkFormat swapChainImageFormat;
         VkFormat swapChainDepthFormat;

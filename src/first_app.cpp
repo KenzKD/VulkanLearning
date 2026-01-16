@@ -1,9 +1,10 @@
 #include "first_app.hpp"
-#include "systems/simple_render_system.hpp"
-#include "systems/point_light_system.hpp"
-#include "lve_camera.hpp"
-#include "lve_buffer.hpp"
+
 #include "keyboard_movement_controller.hpp"
+#include "lve_buffer.hpp"
+#include "lve_camera.hpp"
+#include "systems/point_light_system.hpp"
+#include "systems/simple_render_system.hpp"
 
 #define SHADER_PATH(x) "shaders/" x
 #define MODEL_PATH(x) "C:/Users/Lenovo/Desktop/Game_Making/Vulkan_Stuff/VulkanLearning/models/" x
@@ -15,10 +16,8 @@
 #include <glm/gtc/constants.hpp>
 
 // std
-#include <array>
-#include <chrono>
-#include <stdexcept>
 #include<cassert>
+#include <chrono>
 
 namespace lve
 {

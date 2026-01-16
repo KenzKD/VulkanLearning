@@ -47,8 +47,8 @@ namespace lve
         LveModel& operator=(const LveModel&) = delete;
 
         static std::unique_ptr<LveModel> createModelFromFile(LveDevice& device, const std::string& filePath);
-        void bind(VkCommandBuffer commandBuffer);
-        void draw(VkCommandBuffer commandBuffer);
+        void bind(VkCommandBuffer commandBuffer) const;
+        void draw(VkCommandBuffer commandBuffer) const;
 
     private:
         void createVertexBuffers(const std::vector<Vertex>& vertices);

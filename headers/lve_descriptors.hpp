@@ -34,7 +34,7 @@ namespace lve
         LveDescriptorSetLayout
         (
             LveDevice& lveDevice,
-            std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings
+            const std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding>& bindings
         );
 
         ~LveDescriptorSetLayout();
@@ -90,9 +90,9 @@ namespace lve
 
         bool allocateDescriptorSet(const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
 
-        void freeDescriptors(std::vector<VkDescriptorSet>& descriptors) const;
+        void freeDescriptors(const std::vector<VkDescriptorSet>& descriptors) const;
 
-        void resetPool();
+        void resetPool() const;
 
     private:
         LveDevice& lveDevice;
@@ -106,11 +106,11 @@ namespace lve
     public:
         LveDescriptorWriter(LveDescriptorSetLayout& setLayout, LveDescriptorPool& pool);
 
-        LveDescriptorWriter& writeBuffer(uint32_t binding, VkDescriptorBufferInfo* bufferInfo);
-        LveDescriptorWriter& writeImage(uint32_t binding, VkDescriptorImageInfo* imageInfo);
+        LveDescriptorWriter& writeBuffer(uint32_t binding, const VkDescriptorBufferInfo* bufferInfo);
+        LveDescriptorWriter& writeImage(uint32_t binding, const VkDescriptorImageInfo* imageInfo);
 
         bool build(VkDescriptorSet& set);
-        void overwrite(VkDescriptorSet& set);
+        void overwrite(const VkDescriptorSet& set);
 
     private:
         LveDescriptorSetLayout& setLayout;
