@@ -7,7 +7,6 @@
 
 // std lib headers
 #include <memory>
-#include <string>
 #include <vector>
 
 namespace lve
@@ -25,29 +24,60 @@ namespace lve
         LveSwapChain(const LveSwapChain&) = delete;
         LveSwapChain& operator=(const LveSwapChain&) = delete;
 
-        VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
-        VkRenderPass getRenderPass() { return renderPass; }
-        VkImageView getImageView(int index) { return swapChainImageViews[index]; }
-        size_t imageCount() { return swapChainImages.size(); }
-        VkFormat getSwapChainImageFormat() { return swapChainImageFormat; }
-        VkExtent2D getSwapChainExtent() { return swapChainExtent; }
-        uint32_t width() { return swapChainExtent.width; }
-        uint32_t height() { return swapChainExtent.height; }
+        VkFramebuffer getFrameBuffer(int index) const
+        {
+            return swapChainFramebuffers[index];
+        }
 
-        float extentAspectRatio()
+        VkRenderPass getRenderPass() const
+        {
+            return renderPass;
+        }
+
+        VkImageView getImageView(int index) const
+        {
+            return swapChainImageViews[index];
+        }
+
+        size_t imageCount() const
+        {
+            return swapChainImages.size();
+        }
+
+        VkFormat getSwapChainImageFormat() const
+        {
+            return swapChainImageFormat;
+        }
+
+        VkExtent2D getSwapChainExtent() const
+        {
+            return swapChainExtent;
+        }
+
+        uint32_t width() const
+        {
+            return swapChainExtent.width;
+        }
+
+        uint32_t height() const
+        {
+            return swapChainExtent.height;
+        }
+
+        float extentAspectRatio() const
         {
             return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
         }
 
         VkFormat findDepthFormat();
 
-        VkResult acquireNextImage(uint32_t* imageIndex);
+        VkResult acquireNextImage(uint32_t* imageIndex) const;
         VkResult submitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
         bool compareSwapFormats(const LveSwapChain& swapChain) const
         {
-            return swapChain.swapChainDepthFormat == swapChainDepthFormat &&
-                swapChain.swapChainImageFormat == swapChainImageFormat;
+            return swapChain.swapChainDepthFormat == swapChainDepthFormat && swapChain.swapChainImageFormat ==
+                swapChainImageFormat;
         }
 
     private:

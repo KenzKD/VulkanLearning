@@ -18,17 +18,17 @@ namespace lve
         LveWindow(const LveWindow&) = delete;
         LveWindow& operator=(const LveWindow&) = delete;
 
-        bool shouldClose()
+        bool shouldClose() const
         {
             return glfwWindowShouldClose(window);
         }
 
-        VkExtent2D getExtent()
+        VkExtent2D getExtent() const
         {
             return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
         }
 
-        bool wasWindowResized()
+        bool wasWindowResized() const
         {
             return framebufferResized;
         }

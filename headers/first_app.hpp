@@ -8,7 +8,6 @@
 
 // std
 #include <memory>
-#include <vector>
 
 namespace lve
 {
