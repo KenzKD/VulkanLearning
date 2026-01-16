@@ -19,68 +19,6 @@ namespace lve
         freeCommandBuffers();
     }
 
-    void LveRenderer::recreateSwapChain()
-    {
-        VkExtent2D extent = lveWindow.getExtent();
-
-        while (extent.width == 0 || extent.height == 0)
-        {
-            extent = lveWindow.getExtent();
-            glfwWaitEvents();
-        }
-        vkDeviceWaitIdle(lveDevice.device());
-        lveSwapChain = nullptr; // This was required for Resizing to Work
-        lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent);
-
-        if (lveSwapChain == nullptr)
-        {
-            lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent);
-        }
-        else
-        {
-            std::shared_ptr<LveSwapChain> oldSwapChain = std::move(lveSwapChain);
-            lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent, oldSwapChain);
-
-            if (!oldSwapChain->compareSwapFormats(*lveSwapChain.get()))
-            {
-                throw std::runtime_error("Swap chain image(or depth) format has changed!");
-            }
-        }
-
-        isFrameStarted = false;
-        currentFrameIndex = (currentFrameIndex + 1) % LveSwapChain::MAX_FRAMES_IN_FLIGHT;
-    }
-
-
-    void LveRenderer::createCommandBuffers()
-    {
-        commandBuffers.resize(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
-
-        VkCommandBufferAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandPool = lveDevice.getCommandPool();
-        allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
-
-        if (vkAllocateCommandBuffers(lveDevice.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to allocate command buffers!");
-        }
-    }
-
-    void LveRenderer::freeCommandBuffers()
-    {
-        vkFreeCommandBuffers
-        (
-            lveDevice.device(),
-            lveDevice.getCommandPool(),
-            static_cast<float>(commandBuffers.size()),
-            commandBuffers.data()
-        );
-
-        commandBuffers.clear();
-    }
-
     VkCommandBuffer LveRenderer::beginFrame()
     {
         assert(!isFrameStarted && "Can't call beginFrame() while already in progress");
@@ -110,6 +48,7 @@ namespace lve
 
         return commandBuffer;
     }
+
 
     void LveRenderer::endFrame()
     {
@@ -182,5 +121,66 @@ namespace lve
             "Can't end render pass on command buffer from a different frame");
 
         vkCmdEndRenderPass(commandBuffer);
+    }
+
+    void LveRenderer::createCommandBuffers()
+    {
+        commandBuffers.resize(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = lveDevice.getCommandPool();
+        allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
+
+        if (vkAllocateCommandBuffers(lveDevice.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to allocate command buffers!");
+        }
+    }
+
+    void LveRenderer::freeCommandBuffers()
+    {
+        vkFreeCommandBuffers
+        (
+            lveDevice.device(),
+            lveDevice.getCommandPool(),
+            static_cast<float>(commandBuffers.size()),
+            commandBuffers.data()
+        );
+
+        commandBuffers.clear();
+    }
+
+    void LveRenderer::recreateSwapChain()
+    {
+        VkExtent2D extent = lveWindow.getExtent();
+
+        while (extent.width == 0 || extent.height == 0)
+        {
+            extent = lveWindow.getExtent();
+            glfwWaitEvents();
+        }
+        vkDeviceWaitIdle(lveDevice.device());
+        lveSwapChain = nullptr; // This was required for Resizing to Work
+        lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent);
+
+        if (lveSwapChain == nullptr)
+        {
+            lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent);
+        }
+        else
+        {
+            std::shared_ptr<LveSwapChain> oldSwapChain = std::move(lveSwapChain);
+            lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent, oldSwapChain);
+
+            if (!oldSwapChain->compareSwapFormats(*lveSwapChain.get()))
+            {
+                throw std::runtime_error("Swap chain image(or depth) format has changed!");
+            }
+        }
+
+        isFrameStarted = false;
+        currentFrameIndex = (currentFrameIndex + 1) % LveSwapChain::MAX_FRAMES_IN_FLIGHT;
     }
 }

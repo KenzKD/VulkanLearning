@@ -32,50 +32,6 @@ namespace lve
         vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr);
     }
 
-    void PointLightSystem::createPipelineLayout(const VkDescriptorSetLayout globalSetLayout)
-    {
-        VkPushConstantRange pushConstantRange{};
-        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-        pushConstantRange.offset = 0;
-        pushConstantRange.size = sizeof(PointLightPushConstants);
-
-        const std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
-
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
-        pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-        pipelineLayoutInfo.pushConstantRangeCount = 1;
-        pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-
-        if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create pipeline layout!");
-        }
-    }
-
-    void PointLightSystem::createPipeline(const VkRenderPass renderPass)
-    {
-        assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
-
-        PipelineConfigInfo pipelineConfig{};
-        LvePipeline::defaultPipelineConfigInfo(pipelineConfig);
-        LvePipeline::enableAlphaBlending(pipelineConfig);
-        pipelineConfig.attributeDescriptions.clear();
-        pipelineConfig.bindingDescriptions.clear();
-
-        pipelineConfig.renderPass = renderPass;
-        pipelineConfig.pipelineLayout = pipelineLayout;
-
-        lvePipeline = std::make_unique<LvePipeline>
-        (
-            lveDevice,
-            SHADER_PATH("point_light.vert.spv"),
-            SHADER_PATH("point_light.frag.spv"),
-            pipelineConfig
-        );
-    }
-
     void PointLightSystem::update(const FrameInfo& frameInfo, GlobalUbo& ubo)
     {
         const glm::mat<4, 4, float> rotateLight =
@@ -138,7 +94,7 @@ namespace lve
             nullptr
         );
 
-        for (auto it = sorted.rbegin(); it != sorted.rend(); ++it)
+        for (std::map<float, LveGameObject::id_t>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
         {
             LveGameObject& obj = frameInfo.gameObjects.at(it->second);
 
@@ -159,5 +115,49 @@ namespace lve
 
             vkCmdDraw(frameInfo.commandBuffer, 6, 1, 0, 0);
         }
+    }
+
+    void PointLightSystem::createPipelineLayout(const VkDescriptorSetLayout globalSetLayout)
+    {
+        VkPushConstantRange pushConstantRange{};
+        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        pushConstantRange.offset = 0;
+        pushConstantRange.size = sizeof(PointLightPushConstants);
+
+        const std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
+
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
+        pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+        pipelineLayoutInfo.pushConstantRangeCount = 1;
+        pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
+
+        if (vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create pipeline layout!");
+        }
+    }
+
+    void PointLightSystem::createPipeline(const VkRenderPass renderPass)
+    {
+        assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
+
+        PipelineConfigInfo pipelineConfig{};
+        LvePipeline::defaultPipelineConfigInfo(pipelineConfig);
+        LvePipeline::enableAlphaBlending(pipelineConfig);
+        pipelineConfig.attributeDescriptions.clear();
+        pipelineConfig.bindingDescriptions.clear();
+
+        pipelineConfig.renderPass = renderPass;
+        pipelineConfig.pipelineLayout = pipelineLayout;
+
+        lvePipeline = std::make_unique<LvePipeline>
+        (
+            lveDevice,
+            SHADER_PATH("point_light.vert.spv"),
+            SHADER_PATH("point_light.frag.spv"),
+            pipelineConfig
+        );
     }
 }

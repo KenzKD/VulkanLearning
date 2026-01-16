@@ -13,23 +13,6 @@
 
 namespace lve
 {
-    /**
-     * Returns the minimum instance size required to be compatible with devices minOffsetAlignment
-     *
-     * @param instanceSize The size of an instance
-     * @param minOffsetAlignment The minimum required alignment, in bytes, for the offset member (Eg minUniformBufferOffsetAlignment)
-     *
-     * @return VkResult of the buffer mapping call
-     */
-    VkDeviceSize LveBuffer::getAlignment(const VkDeviceSize instanceSize, const VkDeviceSize minOffsetAlignment)
-    {
-        if (minOffsetAlignment > 0)
-        {
-            return (instanceSize + minOffsetAlignment - 1) & ~(minOffsetAlignment - 1);
-        }
-        return instanceSize;
-    }
-
     LveBuffer::LveBuffer(
         LveDevice& device,
         const VkDeviceSize instanceSize,
@@ -128,6 +111,23 @@ namespace lve
     }
 
     /**
+     * Create a buffer info descriptor
+     *
+     * @param size (Optional) Size of the memory range of the descriptor
+     * @param offset (Optional) Byte offset from beginning
+     *
+     * @return VkDescriptorBufferInfo of specified offset and range
+     */
+    VkDescriptorBufferInfo LveBuffer::descriptorInfo(const VkDeviceSize size, const VkDeviceSize offset) const
+    {
+        return VkDescriptorBufferInfo{
+            buffer,
+            offset,
+            size,
+        };
+    }
+
+    /**
      * Invalidate a memory range of the buffer to make it visible to the host
      *
      * @note Only required for non-coherent memory
@@ -145,23 +145,6 @@ namespace lve
         mappedRange.offset = offset;
         mappedRange.size = size;
         return vkInvalidateMappedMemoryRanges(lveDevice.device(), 1, &mappedRange);
-    }
-
-    /**
-     * Create a buffer info descriptor
-     *
-     * @param size (Optional) Size of the memory range of the descriptor
-     * @param offset (Optional) Byte offset from beginning
-     *
-     * @return VkDescriptorBufferInfo of specified offset and range
-     */
-    VkDescriptorBufferInfo LveBuffer::descriptorInfo(const VkDeviceSize size, const VkDeviceSize offset) const
-    {
-        return VkDescriptorBufferInfo{
-            buffer,
-            offset,
-            size,
-        };
     }
 
     /**
@@ -211,5 +194,22 @@ namespace lve
     VkResult LveBuffer::invalidateIndex(const int index) const
     {
         return invalidate(alignmentSize, index * alignmentSize);
+    }
+
+    /**
+     * Returns the minimum instance size required to be compatible with devices minOffsetAlignment
+     *
+     * @param instanceSize The size of an instance
+     * @param minOffsetAlignment The minimum required alignment, in bytes, for the offset member (Eg minUniformBufferOffsetAlignment)
+     *
+     * @return VkResult of the buffer mapping call
+     */
+    VkDeviceSize LveBuffer::getAlignment(const VkDeviceSize instanceSize, const VkDeviceSize minOffsetAlignment)
+    {
+        if (minOffsetAlignment > 0)
+        {
+            return (instanceSize + minOffsetAlignment - 1) & ~(minOffsetAlignment - 1);
+        }
+        return instanceSize;
     }
 }
