@@ -24,7 +24,7 @@ namespace lve
         LveSwapChain(const LveSwapChain&) = delete;
         LveSwapChain& operator=(const LveSwapChain&) = delete;
 
-        VkFramebuffer getFrameBuffer(int index) const
+        VkFramebuffer getFrameBuffer(const int index) const
         {
             return swapChainFramebuffers[index];
         }
@@ -34,7 +34,7 @@ namespace lve
             return renderPass;
         }
 
-        VkImageView getImageView(int index) const
+        VkImageView getImageView(const int index) const
         {
             return swapChainImageViews[index];
         }
@@ -104,7 +104,7 @@ namespace lve
         VkRenderPass renderPass;
 
         std::vector<VkImage> depthImages;
-        std::vector<VkDeviceMemory> depthImageMemorys;
+        std::vector<VkDeviceMemory> depthImageMemories;
         std::vector<VkImageView> depthImageViews;
         std::vector<VkImage> swapChainImages;
         std::vector<VkImageView> swapChainImageViews;

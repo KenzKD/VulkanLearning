@@ -1,13 +1,13 @@
 #pragma once
 
-#include "lve_window.hpp"
 #include "lve_device.hpp"
 #include "lve_swap_chain.hpp"
+#include "lve_window.hpp"
 
 // std
+#include <cassert>
 #include <memory>
 #include <vector>
-#include <cassert>
 
 namespace lve
 {

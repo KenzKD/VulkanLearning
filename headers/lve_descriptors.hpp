@@ -15,7 +15,7 @@ namespace lve
         class Builder
         {
         public:
-            Builder(LveDevice& lveDevice) : lveDevice{lveDevice}
+            explicit Builder(LveDevice& lveDevice) : lveDevice{lveDevice}
             {
             }
 
@@ -60,7 +60,7 @@ namespace lve
         class Builder
         {
         public:
-            Builder(LveDevice& lveDevice) : lveDevice{lveDevice}
+            explicit Builder(LveDevice& lveDevice) : lveDevice{lveDevice}
             {
             }
 

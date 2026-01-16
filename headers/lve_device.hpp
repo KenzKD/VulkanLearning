@@ -37,7 +37,7 @@ namespace lve
         const bool enableValidationLayers = true;
 #endif
 
-        LveDevice(LveWindow& window);
+        explicit LveDevice(LveWindow& window);
         ~LveDevice();
 
         // Not copyable or movable
@@ -71,14 +71,14 @@ namespace lve
             return presentQueue_;
         }
 
-        SwapChainSupportDetails getSwapChainSupport()
+        SwapChainSupportDetails getSwapChainSupport() const
         {
             return querySwapChainSupport(physicalDevice);
         }
 
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 
-        QueueFamilyIndices findPhysicalQueueFamilies()
+        QueueFamilyIndices findPhysicalQueueFamilies() const
         {
             return findQueueFamilies(physicalDevice);
         }

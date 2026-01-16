@@ -62,7 +62,7 @@ namespace lve
         std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
     private:
-        LveGameObject(id_t objId) : id{objId}
+        explicit LveGameObject(const id_t objId) : id{objId}
         {
         }
 
