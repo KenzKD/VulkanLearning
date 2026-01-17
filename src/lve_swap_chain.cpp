@@ -27,7 +27,7 @@ namespace lve
 
     LveSwapChain::~LveSwapChain()
     {
-        for (const VkImageView imageView : swapChainImageViews)
+        for (VkImageView imageView : swapChainImageViews)
         {
             vkDestroyImageView(device.device(), imageView, nullptr);
         }
@@ -46,7 +46,7 @@ namespace lve
             vkFreeMemory(device.device(), depthImageMemories[i], nullptr);
         }
 
-        for (const VkFramebuffer framebuffer : swapChainFramebuffers)
+        for (VkFramebuffer framebuffer : swapChainFramebuffers)
         {
             vkDestroyFramebuffer(device.device(), framebuffer, nullptr);
         }

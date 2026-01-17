@@ -33,7 +33,7 @@ namespace lve
 
         glm::vec3 getPosition() const
         {
-            return glm::vec3(inverseViewMatrix[3]);
+            return {inverseViewMatrix[3]};
         }
 
     private:

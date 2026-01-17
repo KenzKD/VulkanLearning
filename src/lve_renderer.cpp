@@ -36,7 +36,7 @@ namespace lve
         }
 
         isFrameStarted = true;
-        const VkCommandBuffer commandBuffer = getCurrentCommandBuffer();
+        VkCommandBuffer commandBuffer = getCurrentCommandBuffer();
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -53,7 +53,7 @@ namespace lve
     void LveRenderer::endFrame()
     {
         assert(isFrameStarted && "Can't call endFrame() while not in progress");
-        const VkCommandBuffer commandBuffer = getCurrentCommandBuffer();
+        VkCommandBuffer commandBuffer = getCurrentCommandBuffer();
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
         {
@@ -74,7 +74,7 @@ namespace lve
         isFrameStarted = false;
     }
 
-    void LveRenderer::beginSwapChainRenderPass(const VkCommandBuffer commandBuffer) const
+    void LveRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) const
     {
         assert(isFrameStarted && "Can't call beginSwapChainRenderPass() while not in progress");
         assert(
@@ -113,7 +113,7 @@ namespace lve
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
     }
 
-    void LveRenderer::endSwapChainRenderPass(const VkCommandBuffer commandBuffer) const
+    void LveRenderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) const
     {
         assert(isFrameStarted && "Can't call endSwapChainRenderPass() while already in progress");
         assert(
@@ -174,7 +174,7 @@ namespace lve
             std::shared_ptr<LveSwapChain> oldSwapChain = std::move(lveSwapChain);
             lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent, oldSwapChain);
 
-            if (!oldSwapChain->compareSwapFormats(*lveSwapChain.get()))
+            if (!oldSwapChain->compareSwapFormats(*lveSwapChain))
             {
                 throw std::runtime_error("Swap chain image(or depth) format has changed!");
             }

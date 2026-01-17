@@ -23,14 +23,15 @@ namespace lve
         void unmap();
 
         void writeToBuffer(const void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0) const;
-        VkResult flush(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0) const;
-        VkDescriptorBufferInfo descriptorInfo(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0) const;
-        VkResult invalidate(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0) const;
+        [[nodiscard]] VkResult flush(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0) const;
+        [[nodiscard]] VkDescriptorBufferInfo descriptorInfo
+        (VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0) const;
+        [[nodiscard]] VkResult invalidate(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0) const;
 
         void writeToIndex(const void* data, int index) const;
-        VkResult flushIndex(int index) const;
-        VkDescriptorBufferInfo descriptorInfoForIndex(int index) const;
-        VkResult invalidateIndex(int index) const;
+        [[nodiscard]] VkResult flushIndex(int index) const;
+        [[nodiscard]] VkDescriptorBufferInfo descriptorInfoForIndex(int index) const;
+        [[nodiscard]] VkResult invalidateIndex(int index) const;
 
         VkBuffer getBuffer() const
         {

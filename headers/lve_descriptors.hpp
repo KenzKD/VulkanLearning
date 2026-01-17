@@ -88,7 +88,7 @@ namespace lve
         LveDescriptorPool(const LveDescriptorPool&) = delete;
         LveDescriptorPool& operator=(const LveDescriptorPool&) = delete;
 
-        bool allocateDescriptorSet(const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
+        bool allocateDescriptorSet(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
 
         void freeDescriptors(const std::vector<VkDescriptorSet>& descriptors) const;
 
