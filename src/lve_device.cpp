@@ -21,12 +21,12 @@ namespace lve
     }
 
     VkResult CreateDebugUtilsMessengerEXT(
-        const VkInstance instance,
+        VkInstance instance,
         const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
         const VkAllocationCallbacks* pAllocator,
         VkDebugUtilsMessengerEXT* pDebugMessenger)
     {
-        const PFN_vkCreateDebugUtilsMessengerEXT func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
+        const auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
             vkGetInstanceProcAddr(
                 instance,
                 "vkCreateDebugUtilsMessengerEXT"));
@@ -41,11 +41,11 @@ namespace lve
     }
 
     void DestroyDebugUtilsMessengerEXT(
-        const VkInstance instance,
-        const VkDebugUtilsMessengerEXT debugMessenger,
+        VkInstance instance,
+        VkDebugUtilsMessengerEXT debugMessenger,
         const VkAllocationCallbacks* pAllocator)
     {
-        const PFN_vkDestroyDebugUtilsMessengerEXT func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
+        const auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
             vkGetInstanceProcAddr(
                 instance,
                 "vkDestroyDebugUtilsMessengerEXT"));
@@ -108,8 +108,7 @@ namespace lve
             {
                 return format;
             }
-            else if (
-                tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+            else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
             {
                 return format;
             }
@@ -170,7 +169,7 @@ namespace lve
         return commandBuffer;
     }
 
-    void LveDevice::endSingleTimeCommands(const VkCommandBuffer commandBuffer) const
+    void LveDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) const
     {
         vkEndCommandBuffer(commandBuffer);
 
@@ -185,9 +184,9 @@ namespace lve
         vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
     }
 
-    void LveDevice::copyBuffer(const VkBuffer srcBuffer, const VkBuffer dstBuffer, const VkDeviceSize size) const
+    void LveDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, const VkDeviceSize size) const
     {
-        const VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+        VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
         VkBufferCopy copyRegion{};
         copyRegion.srcOffset = 0; // Optional
@@ -199,10 +198,10 @@ namespace lve
     }
 
     void LveDevice::copyBufferToImage(
-        const VkBuffer buffer, const VkImage image, const uint32_t width, const uint32_t height,
+        VkBuffer buffer, VkImage image, const uint32_t width, const uint32_t height,
         const uint32_t layerCount) const
     {
-        const VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+        VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
         VkBufferImageCopy region{};
         region.bufferOffset = 0;
@@ -427,7 +426,7 @@ namespace lve
         }
     }
 
-    bool LveDevice::isDeviceSuitable(const VkPhysicalDevice device) const
+    bool LveDevice::isDeviceSuitable(VkPhysicalDevice device) const
     {
         const QueueFamilyIndices indices = findQueueFamilies(device);
 
@@ -492,7 +491,7 @@ namespace lve
         return true;
     }
 
-    QueueFamilyIndices LveDevice::findQueueFamilies(const VkPhysicalDevice device) const
+    QueueFamilyIndices LveDevice::findQueueFamilies(VkPhysicalDevice device) const
     {
         QueueFamilyIndices indices;
 
@@ -568,7 +567,7 @@ namespace lve
         }
     }
 
-    bool LveDevice::checkDeviceExtensionSupport(const VkPhysicalDevice device) const
+    bool LveDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) const
     {
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -590,7 +589,7 @@ namespace lve
         return requiredExtensions.empty();
     }
 
-    SwapChainSupportDetails LveDevice::querySwapChainSupport(const VkPhysicalDevice device) const
+    SwapChainSupportDetails LveDevice::querySwapChainSupport(VkPhysicalDevice device) const
     {
         SwapChainSupportDetails details;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, &details.capabilities);

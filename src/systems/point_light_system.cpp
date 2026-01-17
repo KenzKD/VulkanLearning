@@ -9,6 +9,7 @@
 // std
 #include<cassert>
 #include<map>
+#include <ranges>
 #include <stdexcept>
 
 namespace lve
@@ -21,7 +22,7 @@ namespace lve
     };
 
     PointLightSystem::PointLightSystem
-    (LveDevice& device, const VkRenderPass renderPass, const VkDescriptorSetLayout globalSetLayout) : lveDevice(device)
+    (LveDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout) : lveDevice(device)
     {
         createPipelineLayout(globalSetLayout);
         createPipeline(renderPass);
@@ -94,9 +95,9 @@ namespace lve
             nullptr
         );
 
-        for (std::map<float, LveGameObject::id_t>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
+        for (std::pair<const float, unsigned>& it : std::ranges::reverse_view(sorted))
         {
-            LveGameObject& obj = frameInfo.gameObjects.at(it->second);
+            LveGameObject& obj = frameInfo.gameObjects.at(it.second);
 
             PointLightPushConstants push{};
             push.position = glm::vec4(obj.transform.translation, 1.0f);
@@ -117,7 +118,7 @@ namespace lve
         }
     }
 
-    void PointLightSystem::createPipelineLayout(const VkDescriptorSetLayout globalSetLayout)
+    void PointLightSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
     {
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -139,7 +140,7 @@ namespace lve
         }
     }
 
-    void PointLightSystem::createPipeline(const VkRenderPass renderPass)
+    void PointLightSystem::createPipeline(VkRenderPass renderPass)
     {
         assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 

@@ -105,7 +105,7 @@ namespace lve
             VkImage& image,
             VkDeviceMemory& imageMemory) const;
 
-        VkPhysicalDeviceProperties properties;
+        VkPhysicalDeviceProperties properties{};
 
     private:
         void createInstance();
@@ -125,16 +125,16 @@ namespace lve
         bool checkDeviceExtensionSupport(VkPhysicalDevice device) const;
         SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) const;
 
-        VkInstance instance;
-        VkDebugUtilsMessengerEXT debugMessenger;
+        VkInstance instance{};
+        VkDebugUtilsMessengerEXT debugMessenger{};
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
         LveWindow& window;
-        VkCommandPool commandPool;
+        VkCommandPool commandPool{};
 
-        VkDevice device_;
-        VkSurfaceKHR surface_;
-        VkQueue graphicsQueue_;
-        VkQueue presentQueue_;
+        VkDevice device_{};
+        VkSurfaceKHR surface_{};
+        VkQueue graphicsQueue_{};
+        VkQueue presentQueue_{};
 
         const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
         const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};

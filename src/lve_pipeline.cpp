@@ -28,7 +28,7 @@ namespace lve
         vkDestroyPipeline(lveDevice.device(), graphicsPipeline, nullptr);
     }
 
-    void LvePipeline::bind(const VkCommandBuffer commandBuffer) const
+    void LvePipeline::bind(VkCommandBuffer commandBuffer) const
     {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }

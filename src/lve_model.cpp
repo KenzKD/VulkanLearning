@@ -114,9 +114,7 @@ namespace lve
         createIndexBuffers(builder.indices);
     }
 
-    LveModel::~LveModel()
-    {
-    }
+    LveModel::~LveModel() = default;
 
     std::unique_ptr<LveModel> LveModel::createModelFromFile(LveDevice& device, const std::string& filePath)
     {
@@ -125,7 +123,7 @@ namespace lve
         return std::make_unique<LveModel>(device, builder);
     }
 
-    void LveModel::bind(const VkCommandBuffer commandBuffer) const
+    void LveModel::bind(VkCommandBuffer commandBuffer) const
     {
         const VkBuffer buffers[] = {vertexBuffer->getBuffer()};
         constexpr VkDeviceSize offsets[] = {0};
@@ -137,7 +135,7 @@ namespace lve
         }
     }
 
-    void LveModel::draw(const VkCommandBuffer commandBuffer) const
+    void LveModel::draw(VkCommandBuffer commandBuffer) const
     {
         if (hasIndexBuffer)
         {

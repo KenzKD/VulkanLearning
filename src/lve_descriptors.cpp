@@ -112,7 +112,7 @@ namespace lve
     }
 
     bool LveDescriptorPool::allocateDescriptorSet
-    (const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const
+    (VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const
     {
         VkDescriptorSetAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;

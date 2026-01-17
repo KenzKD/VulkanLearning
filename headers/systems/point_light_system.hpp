@@ -28,6 +28,6 @@ namespace lve
         LveDevice& lveDevice;
 
         std::unique_ptr<LvePipeline> lvePipeline;
-        VkPipelineLayout pipelineLayout;
+        VkPipelineLayout pipelineLayout{};
     };
 }

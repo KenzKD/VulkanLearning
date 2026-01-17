@@ -96,8 +96,8 @@ namespace lve
             const std::vector<VkPresentModeKHR>& availablePresentModes);
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
 
-        VkFormat swapChainImageFormat;
-        VkFormat swapChainDepthFormat;
+        VkFormat swapChainImageFormat{};
+        VkFormat swapChainDepthFormat{};
         VkExtent2D swapChainExtent{};
 
         std::vector<VkFramebuffer> swapChainFramebuffers;

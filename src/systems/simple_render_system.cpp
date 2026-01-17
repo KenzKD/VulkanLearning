@@ -19,7 +19,7 @@ namespace lve
     };
 
     SimpleRenderSystem::SimpleRenderSystem
-    (LveDevice& device, const VkRenderPass renderPass, const VkDescriptorSetLayout globalSetLayout) : lveDevice(device)
+    (LveDevice& device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout) : lveDevice(device)
     {
         createPipelineLayout(globalSetLayout);
         createPipeline(renderPass);
@@ -71,7 +71,7 @@ namespace lve
         }
     }
 
-    void SimpleRenderSystem::createPipelineLayout(const VkDescriptorSetLayout globalSetLayout)
+    void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
     {
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -93,7 +93,7 @@ namespace lve
         }
     }
 
-    void SimpleRenderSystem::createPipeline(const VkRenderPass renderPass)
+    void SimpleRenderSystem::createPipeline(VkRenderPass renderPass)
     {
         assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 

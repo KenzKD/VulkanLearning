@@ -16,7 +16,7 @@ namespace lve
         glfwTerminate();
     }
 
-    void LveWindow::createWindowSurface(const VkInstance instance, VkSurfaceKHR* surface) const
+    void LveWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface) const
     {
         if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS)
         {
@@ -26,7 +26,7 @@ namespace lve
 
     void LveWindow::framebufferResizedCallback(GLFWwindow* window, const int width, const int height)
     {
-        LveWindow* lveWindow = static_cast<LveWindow*>(glfwGetWindowUserPointer(window));
+        auto* lveWindow = static_cast<LveWindow*>(glfwGetWindowUserPointer(window));
         lveWindow->framebufferResized = true;
         lveWindow->width = width;
         lveWindow->height = height;

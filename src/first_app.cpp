@@ -38,9 +38,7 @@ namespace lve
         loadGameObjects();
     }
 
-    FirstApp::~FirstApp()
-    {
-    }
+    FirstApp::~FirstApp() = default;
 
     void FirstApp::run()
     {
@@ -93,12 +91,12 @@ namespace lve
 
         LveGameObject viewerObject = LveGameObject::createGameObject();
         viewerObject.transform.translation.z = -2.5f;
-        KeyboardMovementController cameraController{};
 
 
         std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::high_resolution_clock::now();
         while (!lveWindow.shouldClose())
         {
+            KeyboardMovementController cameraController{};
             glfwPollEvents();
 
             std::chrono::time_point<std::chrono::system_clock> newTime = std::chrono::high_resolution_clock::now();
@@ -198,7 +196,7 @@ namespace lve
                 glm::rotate
                 (
                     glm::mat4(1.0f),
-                    (i * glm::two_pi<float>()) / lightColors.size(),
+                    i * glm::two_pi<float>() / lightColors.size(),
                     {0.0f, -1.f, 0.0f}
                 );
             pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f));
